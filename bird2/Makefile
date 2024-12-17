@@ -7,12 +7,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=bird2
-PKG_VERSION:=2.15.1
+PKG_VERSION:=2.16
 PKG_RELEASE:=1
 
 PKG_SOURCE:=bird-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=ftp://bird.network.cz/pub/bird
-PKG_HASH:=48e85c622de164756c132ea77ad1a8a95cc9fd0137ffd0d882746589ce75c75d
+PKG_SOURCE_URL:=https://bird.network.cz/download/
+PKG_HASH:=6629110293af6f1727967121d64f9c8dc94ed6181c4ef8b1dc51c7fdd669871c
 
 PKG_MAINTAINER:=Toke Høiland-Jørgensen <toke@toke.dk>
 PKG_LICENSE:=GPL-2.0-or-later
@@ -97,6 +97,10 @@ protocols, telling BIRD to show various information, telling it to show
 a routing table filtered by a filter, or asking BIRD to reconfigure.
 endef
 
+ifeq ($(ARCH),arm)
+TARGET_CFLAGS+=-mno-unaligned-access
+endif
+
 CONFIGURE_ARGS += --disable-libssh
 
 define Package/bird2/conffiles
@@ -109,7 +113,7 @@ define Package/bird2/install
 	$(INSTALL_DIR)  $(1)/usr/sbin
 	$(INSTALL_BIN)  $(PKG_BUILD_DIR)/bird $(1)/usr/sbin/
 	$(INSTALL_DIR)  $(1)/etc
-	$(INSTALL_DATA) ./files/bird.conf $(1)/etc/
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/doc/bird.conf.example $(1)/etc/bird.conf
 	$(INSTALL_DIR)  $(1)/etc/init.d
 	$(INSTALL_BIN)  ./files/bird.init $(1)/etc/init.d/bird
 endef
